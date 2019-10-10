@@ -3,7 +3,7 @@ from .box import Box
 
 from .canvas import Canvas
 
-from TGL.internal import Event
+from .event import Event
 
 from typing import Dict, Set
 

@@ -6,7 +6,7 @@ from typing import Tuple, Dict
 
 from threading import Thread
 
-from TGL.internal import Event, GameObject, Canvas, timeFunction
+from ..internal import Event, GameObject, Canvas, timeFunction
 from .getch import EventGetter
 
 import traceback

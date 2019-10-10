@@ -1,4 +1,4 @@
-from TGL.internal import GameObject, Box
+from ..internal import GameObject, Box
 
 import numpy
 

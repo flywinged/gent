@@ -1,6 +1,7 @@
-from TGL.internal import GameObject, Box, Selection_Fill, Event
+from ..internal import GameObject, Box, Selection_Fill, Event
 
-from TGL.objects import TextBox, TextLine
+from .textBox import TextBox
+from .textLine import TextLine
 
 from typing import List, Tuple
 

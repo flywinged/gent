@@ -1,5 +1,5 @@
-from TGL.internal import GameObject, Box
-from TGL.utilities import recursiveSplit
+from ..internal import GameObject, Box
+from ..utilities import recursiveSplit
 
 from .textLine import TextLine
 

@@ -1,4 +1,4 @@
-from TGL.internal.event import createEvent
+from ..internal.event import createEvent
 
 import platform
 

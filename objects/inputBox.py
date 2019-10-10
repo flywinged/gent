@@ -1,6 +1,6 @@
-from TGL.internal import Event, timeFunction, Box, EVENT_HANDLER
+from ..internal import Event, timeFunction, Box, EVENT_HANDLER
 
-from TGL.utilities import recursiveSplit
+from utilities import recursiveSplit
 
 from .textBox import TextBox
 
