@@ -48,8 +48,8 @@ class Canvas:
         resultingString: List[str] = [""] * (self.width * self.height + 2)
 
         # Loop through all the characters of both the string and the formatString, and create the resulting string list
-        previousTextColor = (0, 0, 0)
-        previousBackgroundColor = (0, 0, 0)
+        previousTextColor = None
+        previousBackgroundColor = None
         for j in range(self.height):
             for i in range(self.width):
             
@@ -58,11 +58,11 @@ class Canvas:
                 textColor = tuple(self.textColors[i, j])
                 backgroundColor = tuple(self.backgroundColors[i, j])
 
-                if textColor != previousTextColor:
+                if not previousTextColor or textColor != previousTextColor:
                     character = fg(*textColor) + character
                     previousTextColor = textColor
 
-                if backgroundColor != previousBackgroundColor:
+                if not previousBackgroundColor or backgroundColor != previousBackgroundColor:
                     character = bg(*backgroundColor) + character
                     previousBackgroundColor = backgroundColor
 
