@@ -1,6 +1,6 @@
 from ..internal import Event, timeFunction, Box, EVENT_HANDLER
 
-from utilities import recursiveSplit
+from ..utilities import recursiveSplit
 
 from .textBox import TextBox
 
