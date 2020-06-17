@@ -3,16 +3,16 @@ from distutils.core import setup
 import setuptools
 
 setup(
-    name = 'TGL',
+    name = 'pyGEfT',
     packages = setuptools.find_packages(),
-    version = '0.1.1a1',
+    version = '0.0.1a1',
     license = 'MIT',
-    description = 'TGL (Terminal Graphics Library), is a library to allow interaction in user terminals',
+    description = 'pyGEfT (Python Game Engine for Terminal), is a library to allow game like interactions in user terminals',
     author = 'Clayton Brown',
     author_email = 'clayton.john.brown@gmail.com',
-    url = 'https://github.com/flywinged/TGL',
-    # download_url = 'https://github.com/flywinged/TGL/archive/v_01.tar.gz',
-    keywords = ['Terminal', 'Graphics', 'Library', 'Game', 'Engine'],
+    url = "https://github.com/flywinged/pyGEfT",
+    # download_url = 'https://github.com/flywinged/pyGEfT/archive/v_01.tar.gz',
+    keywords = ['Terminal', 'Graphics', 'Game', 'Engine'],
     install_requires = [            # I get to this in a second
         'numpy',
         'colorama',

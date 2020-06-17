@@ -1,2 +1,2 @@
-# TGL
-Terminal Graphics Library
+# pyGEfT
+python Game Engine for Terminals
