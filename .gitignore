@@ -1,2 +1,8 @@
 *__pycache__
 *.pyc
+
+test.py
+
+# Build ignores
+MANIFEST
+dist

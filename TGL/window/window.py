@@ -2,6 +2,8 @@ import os
 import sys
 import time
 
+import colorama
+
 from typing import Tuple, Dict
 
 from threading import Thread
@@ -72,12 +74,17 @@ class Window:
             
             try:
                 while self.window.isActive:
+
+                    # Move the cursor back to the beginning of the screen
+                    print("%s" % colorama.Cursor.POS(), end = "")
                     
+                    # Print the new screen.
                     if self.window.isDisplayActive:
                         canvas = self.window.activeCanvas
                         print(canvas.getCanvasText(), end = "")
-
-                    time.sleep(.02)
+                    
+                    # Slight delay to prevent overuse of the thread.
+                    time.sleep(0.005)
 
             except:
                 self.window.isActive = False
@@ -155,6 +162,9 @@ class Window:
         self.canvasUpdateThread: Window.CanvasUpdateThread = Window.CanvasUpdateThread(self)
         self.canvasDrawThread: Window.CanvasDrawThread = Window.CanvasDrawThread(self)
         self.updateThread: Window.UpdateThread = Window.UpdateThread(self)
+
+        # Initialize colorama
+        colorama.init()
     
     def addGameObject(self, gameObject: GameObject, layer: int = 0):
         '''
