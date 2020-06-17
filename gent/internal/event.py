@@ -104,7 +104,7 @@ class Event:
 
 def createEvent(e):
     '''
-
+    Return a simple event object describing what input the user gave.
     '''
 
     event = Event()

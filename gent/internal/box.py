@@ -3,7 +3,8 @@ from dataclasses import dataclass
 @dataclass
 class Box:
     '''
-    Basic box class to stor a rectangle style object
+    Basic box class to store a rectangle style object.
+    These are the base for basically everything in gent.
     '''
 
     x: int

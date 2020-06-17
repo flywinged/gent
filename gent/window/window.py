@@ -54,7 +54,7 @@ class Window:
 
                     self.window.switchBuffers()
 
-                    time.sleep(.02)
+                    time.sleep(.005)
 
             except:
                 self.window.isActive = False

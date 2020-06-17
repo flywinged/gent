@@ -146,6 +146,7 @@ class GameObject:
         else:
             handlerReturn = self.objectHandler.handleEvent(event)
 
+        # After the object handler tackles the event, 
         self._onEvent(event)
         
         return handlerReturn

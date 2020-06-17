@@ -2,6 +2,10 @@ from distutils.core import setup
 
 import setuptools
 
+# pypi commands
+# https://packaging.python.org/guides/using-testpypi/
+# https://packaging.python.org/tutorials/packaging-projects/
+
 setup(
     name = 'gent',
     packages = setuptools.find_packages(),
