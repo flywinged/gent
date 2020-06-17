@@ -6,5 +6,6 @@ test.py
 # Build ignores
 MANIFEST
 dist
+build
 
-pyGEfT.egg-info
+TGE.egg-info
