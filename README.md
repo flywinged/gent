@@ -1,5 +1,5 @@
-# TGE
-Terminal Game Engine
+# gent
+Game ENgine for Terminals
 
 # pypi commands
 https://packaging.python.org/guides/using-testpypi/
