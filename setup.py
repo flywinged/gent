@@ -1,9 +1,11 @@
 from distutils.core import setup
 
+import setuptools
+
 setup(
     name = 'TGL',
-    packages = ['TGL'],
-    version = '0.01',
+    packages = setuptools.find_packages(),
+    version = '0.1.1a1',
     license = 'MIT',
     description = 'TGL (Terminal Graphics Library), is a library to allow interaction in user terminals',
     author = 'Clayton Brown',

@@ -6,3 +6,5 @@ test.py
 # Build ignores
 MANIFEST
 dist
+
+TGL.egg-info
