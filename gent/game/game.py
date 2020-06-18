@@ -112,7 +112,7 @@ class Game:
                     # Then we want to update every gameObject
                     for gameObjectID in self.game.gameObjectsIDMap:
                         gameObject = self.game.gameObjectsIDMap[gameObjectID]
-                        gameObject.update(self.game.gameState)
+                        gameObject.update()
                     
                     # Now we need to wait the appropriate amount of time before calling the next update fram
                     timeLeft = self.game.updateDelay - (timeFunction() - self.game.gameState.now)

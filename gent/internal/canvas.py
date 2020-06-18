@@ -23,10 +23,14 @@ class Canvas:
         self.width: int = width
         self.height: int = height
 
-        # Create the character and format arrays
-        self.characters: numpy.ndarray = numpy.zeros((self.width, self.height), dtype = numpy.uint16)
-        self.textColors: numpy.ndarray = numpy.zeros((self.width, self.height, 3), dtype = numpy.uint8)
-        self.backgroundColors: numpy.ndarray = numpy.zeros((self.width, self.height, 3), dtype = numpy.uint8)
+        # Create the character and format arrays. Separated as such for linting reasons
+        self.characters: numpy.ndarray
+        self.characters = numpy.zeros((self.width, self.height), dtype = numpy.uint16)
+        self.textColors: numpy.ndarray
+        self.textColors = numpy.zeros((self.width, self.height, 3), dtype = numpy.uint8)
+        self.backgroundColors: numpy.ndarray
+        self.backgroundColors = numpy.zeros((self.width, self.height, 3), dtype = numpy.uint8)
+
 
         # Populate the character and format arrays with default values
         self.clearCanvas(" ", 0)
@@ -73,8 +77,6 @@ class Canvas:
 
                     if "win" in platform.system().lower():
                         character = "\n" + character
-                    else:
-                        character = character
 
                 resultingString[j * self.width + i] = character
 
