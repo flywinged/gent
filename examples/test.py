@@ -1,7 +1,6 @@
 # Copyright Clayton Brown 2019. See LICENSE file.
 
-from gent.game import Game
-from gent.game import GameState
+from gent import GameState, Game
 
 def test():
 

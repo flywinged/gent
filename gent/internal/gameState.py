@@ -2,7 +2,7 @@
 
 import pickle
 
-from ..internal import timeFunction
+from .timing import timeFunction
 
 class GameState:
     '''

@@ -21,7 +21,8 @@ setup(
         'numpy',
         'colorama',
         'sty',
-        'dataclasses'
+        'dataclasses',
+        'csaps'
     ],
     classifiers = [
         'Development Status :: 3 - Alpha',

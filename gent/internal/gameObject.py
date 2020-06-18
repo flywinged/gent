@@ -11,7 +11,9 @@ from .canvas import Canvas
 
 from typing import Dict, Set
 
-from dataclasses import dataclass     
+from dataclasses import dataclass
+
+from ..constants import *
 
 class GameObject:
     '''
@@ -175,6 +177,8 @@ class GameObject:
     def _setValues(self):
         '''
         Update the gameobject values to reflect what has been added.
+
+        Should draw to self.bufferCanvas
         '''
         
         # Virtual function to be overwritten by any children which need it
@@ -190,6 +194,8 @@ class GameObject:
         '''
         Handler for gameObject setting its internal values
         '''
+
+        self.bufferCanvas.clearCanvas()
 
         self._setValues()
         
@@ -356,7 +362,7 @@ class ObjectHandler:
         if self.selectingObject:
 
             # If Escape is pressed, the object handler should return False, indicating the object handler should be broken out of the event loop.
-            if event.keyName == "ESCAPE" or event.keyName == "TAB":
+            if event.keyName in CONNECTION_BACK:
                 self.currentGameObject.onHoverExit()
                 return EVENT_HANDLER.EXIT
 
@@ -365,13 +371,13 @@ class ObjectHandler:
 
             # Determine which gameObject to move to if the gameObject is in the connections
             if self.currentGameObject in self.connections:
-                if event.keyName == "UP" or event.char == "e":
+                if event.keyName in CONNECTION_UP:
                     nextGameObject = self.connections[self.currentGameObject].up
-                if event.keyName == "DOWN" or event.char == "d":
+                if event.keyName in CONNECTION_DOWN:
                     nextGameObject = self.connections[self.currentGameObject].down
-                if event.keyName == "LEFT" or event.char == "s":
+                if event.keyName in CONNECTION_LEFT:
                     nextGameObject = self.connections[self.currentGameObject].left
-                if event.keyName == "RIGHT" or event.char == "f":
+                if event.keyName in CONNECTION_RIGHT:
                     nextGameObject = self.connections[self.currentGameObject].right
             
             if event.keyName in self.hotKeys:
@@ -382,7 +388,7 @@ class ObjectHandler:
                 self.selectObject(nextGameObject)
             
             # If return is pressed, we are now switching to object handling mode
-            if event.keyName == "RETURN" or event.keyName == "SPACE":
+            if event.keyName in CONNECTION_ENTER:
                 self.currentGameObject.onEntry()
 
                 if self.currentGameObject.isSelectable:

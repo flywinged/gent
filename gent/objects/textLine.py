@@ -27,8 +27,6 @@ class TextLine(GameObject):
 
     def _setValues(self):
 
-        self.bufferCanvas.clearCanvas()
-
         # Create adjusted text to ignore the trailing space
         adjustedText = self.text
         if len(adjustedText) > 0 and (adjustedText[-1] == " " or adjustedText[-1] == "\n"):

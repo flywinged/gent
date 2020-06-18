@@ -7,6 +7,7 @@ import sys
 
 # Import all the examples
 from examples.test import test
+from examples.Blackjack import run as runBlackjack
 
 if __name__ == "__main__":
     
@@ -16,6 +17,10 @@ if __name__ == "__main__":
     # Testing call
     if sys.argv[1] == "test":
         test()
+    
+    # Blackjack
+    if sys.argv[1] == "blackjack":
+        runBlackjack()
 
     # Didn't call a valid game
     else:
