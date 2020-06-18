@@ -7,3 +7,5 @@ dist
 build
 
 gent.egg-info
+
+.vscode
