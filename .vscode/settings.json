@@ -1,6 +1,0 @@
-{
-    "python.pythonPath": "C:\\Users\\clayt\\AppData\\Local\\Programs\\Python\\Python37\\python.exe",
-    "python.linting.mypyEnabled": false,
-    "python.linting.pylintEnabled": true,
-    "python.linting.enabled": true
-}
