@@ -1,3 +1,5 @@
+# Copyright Clayton Brown 2019. See LICENSE file.
+
 from ..internal import Event, timeFunction, Box, EVENT_HANDLER
 
 from ..utilities import recursiveSplit

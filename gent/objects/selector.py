@@ -1,4 +1,6 @@
-from ..internal import GameObject, Box, Selection_Fill, Event
+# Copyright Clayton Brown 2019. See LICENSE file.
+
+from ..internal import GameObject, Box, Selection_Fill, Event, GameState
 
 from .textBox import TextBox
 from .textLine import TextLine
@@ -199,7 +201,7 @@ class Selector(GameObject):
     def removeSelectorTextObject(self, position: Tuple[int, int]):
         self.getSelectorObject(self.selectedGridPositions.pop(self.selectedGridPositions.index(position))).isSelected = False
 
-    def _onEvent(self, event: Event):
+    def _onEvent(self, event: Event, gameState: GameState):
         '''
         When something happens to the selector object, make sure all the object's "isSelected" attribute gets correctly updated.
         '''

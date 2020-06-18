@@ -1,3 +1,5 @@
+# Copyright Clayton Brown 2019. See LICENSE file.
+
 class Color:
     '''
     Class for handling colors. Create and transition between them very easily.

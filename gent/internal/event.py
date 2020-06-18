@@ -1,3 +1,5 @@
+# Copyright Clayton Brown 2019. See LICENSE file.
+
 from dataclasses import dataclass
 
 from enum import Enum, auto

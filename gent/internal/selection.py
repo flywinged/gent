@@ -1,3 +1,5 @@
+# Copyright Clayton Brown 2019. See LICENSE file.
+
 from .gameObject import Selection
 
 from typing import Dict

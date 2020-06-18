@@ -1,3 +1,5 @@
+# Copyright Clayton Brown 2019. See LICENSE file.
+
 import os
 import sys
 import time
@@ -8,12 +10,12 @@ from typing import Tuple, Dict
 
 from threading import Thread
 
-from ..internal import Event, GameObject, Canvas, timeFunction
+from ..internal import Event, GameObject, Canvas, timeFunction, GameState
 from .getch import EventGetter
 
 import traceback
 
-class Window:
+class Game:
     '''
     Parent class for handling visuals on the canvas.
 
@@ -21,73 +23,67 @@ class Window:
     ----------
     canvasSize: Tuple of (canvasWidth, canvasHeight)
     '''
-
-    class CanvasUpdateThread(Thread):
-        '''
-        The canvasUpdateThread handles all the repetitive drawing that needs to happen and will keep the window canvass constantly updated.
-        '''
-
-        def __init__(self, window: "Window"):
-            Thread.__init__(self)
-
-            self.window: Window = window
-        
-        def run(self):
-
-            try:
-                while self.window.isActive:
-                    
-                    # First clear the canvas
-                    canvas = self.window.bufferCanvas
-                    canvas.clearCanvas()
-
-                    # Draw each gameObject in each layer
-                    layerList = sorted(list(self.window.layerToGameObjectIDMap))
-
-                    for layer in layerList:
-                        gameObjects = self.window.layerToGameObjectIDMap[layer]
-                        for gameObjectID in gameObjects:
-                            gameObject = self.window.gameObjectsIDMap[gameObjectID]
-
-                            if gameObject.drawObject:
-                                gameObject.draw(canvas)
-
-                    self.window.switchBuffers()
-
-                    time.sleep(.005)
-
-            except:
-                self.window.isActive = False
-                print(traceback.format_exc())
             
     class CanvasDrawThread(Thread):
         '''
 
         '''
 
-        def __init__(self, window: "Window"):
+        def __init__(self, game: "Game"):
             Thread.__init__(self)
 
-            self.window: Window = window
+            self.game: Game = game
         
         def run(self):
             
             try:
-                while self.window.isActive:
+                while self.game.isActive:
+
+                    # Determine when this loop starts
+                    startTime = timeFunction()
+
+
+                    ##############################
+                    # DRAW GAMEOBJECTS ON CANVAS #
+                    ##############################
+
+                    # First clear the canvas
+                    canvas = self.game.bufferCanvas
+                    canvas.clearCanvas()
+
+                    # Draw each gameObject in each layer
+                    layerList = sorted(list(self.game.layerToGameObjectIDMap))
+
+                    for layer in layerList:
+                        gameObjects = self.game.layerToGameObjectIDMap[layer]
+                        for gameObjectID in gameObjects:
+                            gameObject = self.game.gameObjectsIDMap[gameObjectID]
+                            gameObject.draw(canvas)
+
+                    self.game.switchBuffers()
+
+
+                    ########################
+                    # PRINT WHAT WAS DRAWN #
+                    ########################
 
                     # Move the cursor back to the beginning of the screen
                     print("%s" % colorama.Cursor.POS(), end = "")
                     
                     # Print the new screen.
-                    if self.window.isDisplayActive:
-                        canvas = self.window.activeCanvas
+                    if self.game.isDisplayActive:
+                        canvas = self.game.activeCanvas
                         print(canvas.getCanvasText(), end = "")
                     
-                    # Slight delay to prevent overuse of the thread.
-                    time.sleep(0.005)
+                    # Now we need to wait the appropriate amount of time before calling the next draw
+                    timeLeft = self.game.drawDelay - (timeFunction() - startTime)
+                    if timeLeft < 0.005: timeLeft = 0.005 # We never want to fully saturate this thread
+
+                    # Sleep the appropriate amount of time to keep the drawDelay up
+                    time.sleep(timeLeft)
 
             except:
-                self.window.isActive = False
+                self.game.isActive = False
                 print(traceback.format_exc())
     
     class UpdateThread(Thread):
@@ -95,34 +91,50 @@ class Window:
 
         '''
 
-        def __init__(self, window: "Window"):
+        def __init__(self, game: "Game"):
             Thread.__init__(self)
 
-            self.window: Window = window
+            self.game: Game = game
 
         def run(self):
 
             try:
-                while self.window.isActive:
 
-                    time.sleep(.02)
-                    self.window.update()
+                # As long as the game is active we want to update continuously
+                while self.game.isActive:
 
-                    for gameObjectID in self.window.gameObjectsIDMap:
-                        gameObject = self.window.gameObjectsIDMap[gameObjectID]
+                    # Update the game state time before any updates are performed
+                    self.game.gameState.updateTime()
+
+                    # Then perform any global game updates
+                    self.game.update()
+
+                    # Then we want to update every gameObject
+                    for gameObjectID in self.game.gameObjectsIDMap:
+                        gameObject = self.game.gameObjectsIDMap[gameObjectID]
                         gameObject.update()
+                    
+                    # Now we need to wait the appropriate amount of time before calling the next update fram
+                    timeLeft = self.game.updateDelay - (timeFunction() - self.game.gameState.now)
+                    if timeLeft < 0.005: timeLeft = 0.005 # We never want to fully saturate this thread
+
+                    # Sleep the appropriate amount of time to keep the update rate up
+                    time.sleep(timeLeft)
                         
             except:
-                self.window.isActive = False
+                self.game.isActive = False
                 print(traceback.format_exc())
 
-    def __init__(self, canvasSize: Tuple[int, int], frameRate: int = 1):
+    def __init__(self, gameState: GameState, canvasSize: Tuple[int, int], updateDelay: float = 1 / 60, drawDelay: float = 1 / 60):
 
-        # Set the height and width of the window, and then set those values in the terminal
+        # Initialize the gameState
+        self.gameState: GameState = gameState
+
+        # Set the height and width of the game, and then set those values in the terminal
         self.width: int = canvasSize[0]
         self.height: int = canvasSize[1]
 
-        # Resize the terminal window according to the platform
+        # Resize the terminal game according to the platform
         if sys.platform == "darwin":
             sys.stdout.write("\x1b[8;{rows};{cols}t".format(rows=self.height,cols=self.width))
         
@@ -132,8 +144,9 @@ class Window:
         elif sys.platform == "linux":
             print("\x1b[8;%i;%it" % (self.height, self.width))
 
-        # Assign the framerate
-        self.frameRate: int = frameRate
+        # Assign the frame and update rates
+        self.drawDelay: float = drawDelay
+        self.updateDelay: float = updateDelay
 
         # Dictionary of GameObjectIDs assigned to their respective layers
         self.gameObjectIDToLayerMap: Dict[int, int] = {}
@@ -158,21 +171,20 @@ class Window:
         # This is for time management purposes
         self.currentTime: float = timeFunction()
 
-        # Create the canvas Threads
-        self.canvasUpdateThread: Window.CanvasUpdateThread = Window.CanvasUpdateThread(self)
-        self.canvasDrawThread: Window.CanvasDrawThread = Window.CanvasDrawThread(self)
-        self.updateThread: Window.UpdateThread = Window.UpdateThread(self)
+        # Create the game Threads
+        self.canvasDrawThread: Game.CanvasDrawThread = Game.CanvasDrawThread(self)
+        self.updateThread: Game.UpdateThread = Game.UpdateThread(self)
 
         # Initialize colorama
         colorama.init()
     
     def addGameObject(self, gameObject: GameObject, layer: int = 0):
         '''
-        Puts a game object into the window. Handles all the layering and everything.
+        Puts a game object into the game. Handles all the layering and everything.
 
         Parameters
         ----------
-        gameObject: The game object to add to the window. Can be a raw gameObject or any of its children
+        gameObject: The game object to add to the game. Can be a raw gameObject or any of its children
 
         layer: This is the layer to add the gameObject to. This should be an integer. Game objects are drawn from smallest layer to largest layer
         '''
@@ -193,7 +205,7 @@ class Window:
     
     def removeGameObject(self, gameObject: GameObject):
         '''
-        Removes a gameObject from the window.
+        Removes a gameObject from the game.
         '''
 
         # Make sure the gameObjectID exists
@@ -245,8 +257,6 @@ class Window:
         Start the game loop.
         '''
 
-        # self.eventThread.start()
-        self.canvasUpdateThread.start()
         self.canvasDrawThread.start()
         self.updateThread.start()
 
@@ -263,7 +273,7 @@ class Window:
             if event.keyNumber == (4, ):
                 self.isDisplayActive = not self.isDisplayActive
             
-            # This is for error management. If something breaks, kill the window and print the error
+            # This is for error management. If something breaks, kill the game and print the error
             try:
                 self.handleEvent(event)
             except:

@@ -1,3 +1,5 @@
+# Copyright Clayton Brown 2019. See LICENSE file.
+
 from typing import List
 
 def recursiveSplit(text: str, width: int, currentIndex = 0, lastWordIndex: int = 0, lastLineIndex: int = 0, returnValue: List[str] = None) -> List[str]:

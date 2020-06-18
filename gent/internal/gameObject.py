@@ -1,9 +1,13 @@
-from .event import Event, EVENT_HANDLER
+# Copyright Clayton Brown 2019. See LICENSE file.
+
+from .event import Event
+from .event import EVENT_HANDLER
+
+from .gameState import GameState
+
 from .box import Box
 
 from .canvas import Canvas
-
-from .event import Event
 
 from typing import Dict, Set
 
@@ -64,9 +68,6 @@ class GameObject:
 
         # Set the current selection status
         self.selectionStatus = GameObject.OUTLINED
-    
-        # Toggle if the gameObject should be draw on the screen or not
-        self.drawObject: bool = True
 
         # The containing objectHandler (To be set upon addition to an objectHandler)
         self.parentObjectHandler: ObjectHandler = None
@@ -115,7 +116,7 @@ class GameObject:
         destination.textColors[x:x + w, y:y + h] = self.activeCanvas.textColors
         destination.backgroundColors[x:x + w, y:y + h] = self.activeCanvas.backgroundColors
 
-    def _handleEvent(self, event: Event): #pylint: disable=unused-argument
+    def _handleEvent(self, event: Event, gameState: GameState): #pylint: disable=unused-argument
         '''
         Allow the gameObject to handle an event internally.
 
@@ -127,7 +128,7 @@ class GameObject:
         # Virtual event handler to be overwritten by all children
         return EVENT_HANDLER.DID_NOT_HANDLE
 
-    def handleEvent(self, event: Event):
+    def handleEvent(self, event: Event, gameState: GameState):
         '''
         How the game object should handle events
         '''
@@ -140,36 +141,36 @@ class GameObject:
             if event.keyName == "ESCAPE" or event.keyName == "TAB":
                 return EVENT_HANDLER.EXIT
 
-            handlerReturn = self._handleEvent(event)
+            handlerReturn = self._handleEvent(event, gameState)
 
         # Otherwise, let the object handler handle the event
         else:
             handlerReturn = self.objectHandler.handleEvent(event)
 
         # After the object handler tackles the event, 
-        self._onEvent(event)
+        self._onEvent(event, gameState)
         
         return handlerReturn
 
-    def _onEvent(self, event: Event):
+    def _onEvent(self, event: Event, gameState: GameState):
         '''
         Is called each time the gameObject captures an event
         '''
 
         # Virtual function to be overwritten
 
-    def _update(self):
+    def _update(self, gameState: GameState):
         '''
         Update function to call each frame.
         '''
 
         # Virtual function to be overwritten by any children which need it
 
-    def update(self):
+    def update(self, gameState: GameState):
         if self.objectHandler != None:
             self.objectHandler.update()
         
-        self._update()
+        self._update(gameState)
 
     def _setValues(self):
         '''

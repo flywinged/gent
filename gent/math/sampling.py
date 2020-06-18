@@ -1,3 +1,5 @@
+# Copyright Clayton Brown 2019. See LICENSE file.
+
 import numpy
 
 from types import FunctionType
@@ -90,7 +92,7 @@ class ProbabilityDistribution:
         '''
 
         # Create the random numbers accoring the integral spline.
-        randomNumbers = self.integralSpline(numpy.random.random((n,)) * self.areaModulation)
+        randomNumbers = self.integralSpline(numpy.random.random((n,)) * self.areaModulation) #pylint: disable=no-member
 
         # Return type float if n is set to 1
         if n == 1:

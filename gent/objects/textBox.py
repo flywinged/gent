@@ -1,3 +1,5 @@
+# Copyright Clayton Brown 2019. See LICENSE file.
+
 from ..internal import GameObject, Box
 from ..utilities import recursiveSplit
 
@@ -60,7 +62,7 @@ class TextBox(GameObject):
             textLineData.textLine.setValues()
             textLineData.textIndex = 0
 
-    def _setValues(self): #pylint: disable=arguments-differ
+    def _setValues(self):
         '''
         **kwargs
             lines: Presplit text data
