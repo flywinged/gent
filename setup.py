@@ -22,7 +22,8 @@ setup(
         'colorama',
         'sty',
         'dataclasses',
-        'csaps'
+        'csaps',
+        "Pillow"
     ],
     classifiers = [
         'Development Status :: 3 - Alpha',

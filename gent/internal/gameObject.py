@@ -71,6 +71,9 @@ class GameObject:
         # Whether or not the object will use transparency values
         self.useTransparency: bool = False
 
+        # If hide is set to true, it won't be drawn
+        self.hide: bool = False
+
         # Set the current selection status
         self.selectionStatus = GameObject.OUTLINED
 
@@ -112,6 +115,9 @@ class GameObject:
         ----------
         destination: The canvas or gameObject to draw on
         '''
+
+        # Don't do anything if the object is hidden
+        if self.hide: return
 
         self.setValues()
 

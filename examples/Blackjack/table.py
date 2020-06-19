@@ -31,7 +31,7 @@ class Table(GameObject):
 
         for i in range(len(STATE.playerCards)):
             self.playerCards.append(Card(
-                (i * 24 + 2, 24),
+                (i * 24 + 2, 23),
                 STATE.playerCards[i]
             ))
         
@@ -52,5 +52,7 @@ class Table(GameObject):
         for card in self.playerCards:
             card.drawOn(self)
         
-        for card in self.dealerCards:
+        for i, card in enumerate(self.dealerCards):
+            if i == 0:
+                card.state = "hidden"
             card.drawOn(self)

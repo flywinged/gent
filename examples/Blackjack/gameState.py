@@ -18,6 +18,9 @@ class BlackJackState(GameState):
 
         self.dealerCards: List[CardData] = []
         self.playerCards: List[CardData] = []
+
+        # Who's turn it is
+        self.turn: str = "player"
     
     def deal(self):
 
