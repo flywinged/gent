@@ -13,6 +13,8 @@ from dataclasses import dataclass
 
 from ..constants import *
 
+import numpy
+
 class GameObject:
     '''
     Base Class for all game objects
@@ -66,6 +68,9 @@ class GameObject:
         self.activeCanvas: Canvas = Canvas(self.realW, self.realH)
         self.bufferCanvas: Canvas = Canvas(self.realW, self.realH)
 
+        # Whether or not the object will use transparency values
+        self.useTransparency: bool = False
+
         # Set the current selection status
         self.selectionStatus = GameObject.OUTLINED
 
@@ -112,9 +117,28 @@ class GameObject:
 
         x, y, w, h = self.realX + offset[0], self.realY + offset[1], self.realW, self.realH
 
-        destination.characters[x:x + w, y:y + h] = self.activeCanvas.characters
-        destination.textColors[x:x + w, y:y + h] = self.activeCanvas.textColors
-        destination.backgroundColors[x:x + w, y:y + h] = self.activeCanvas.backgroundColors
+        # If transparency is enabled, we need to do some extra math when drawing.
+        if self.useTransparency:
+
+            # If the transparency value is greater than 50% (126 on a scale of 255),
+            #   then we want to copy the new text.
+            textUpdates = numpy.where(self.activeCanvas.transparency > 126)
+            destinationX = numpy.array(textUpdates[0]) + x
+            destinationY = numpy.array(textUpdates[1]) + y
+
+            destination.characters[destinationX, destinationY] = self.activeCanvas.characters[textUpdates]
+            destination.textColors[destinationX, destinationY] = self.activeCanvas.textColors[textUpdates]
+
+            # Then we apply transparencies to the background.
+            destination.backgroundColors[x:x + w, y:y + h] = (
+                destination.backgroundColors[x:x + w, y:y + h].astype(numpy.float32) * numpy.expand_dims(1.0 - self.activeCanvas.transparency.astype(numpy.float32) / 255, 2) +
+                self.activeCanvas.backgroundColors.astype(numpy.float32) * numpy.expand_dims(self.activeCanvas.transparency.astype(numpy.float32) / 255, 2)
+            ).astype(numpy.uint8)
+            
+        else:
+            destination.characters[x:x + w, y:y + h] = self.activeCanvas.characters
+            destination.textColors[x:x + w, y:y + h] = self.activeCanvas.textColors
+            destination.backgroundColors[x:x + w, y:y + h] = self.activeCanvas.backgroundColors
 
     def _handleEvent(self, event: Event): #pylint: disable=unused-argument
         '''

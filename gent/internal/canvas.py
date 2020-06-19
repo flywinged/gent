@@ -30,12 +30,13 @@ class Canvas:
         self.textColors = numpy.zeros((self.width, self.height, 3), dtype = numpy.uint8)
         self.backgroundColors: numpy.ndarray
         self.backgroundColors = numpy.zeros((self.width, self.height, 3), dtype = numpy.uint8)
-
+        self.transparency: numpy.ndarray
+        self.transparency = numpy.ones((self.width, self.height), dtype = numpy.uint8)
 
         # Populate the character and format arrays with default values
         self.clearCanvas(" ", 0)
     
-    def clearCanvas(self, clearCharacter: str = " ", textColor: tuple = (255, 255, 255), backgroundColor: tuple = (0, 0, 0)):
+    def clearCanvas(self, clearCharacter: str = " ", textColor: tuple = (255, 255, 255), backgroundColor: tuple = (0, 0, 0), transparency: int = 0):
         '''
         Assign format and character values to the entire canvas at once
         '''
@@ -44,6 +45,7 @@ class Canvas:
         self.characters.fill(ord(clearCharacter))
         self.textColors[:,:] = numpy.array(textColor)
         self.backgroundColors[:,:] = numpy.array(backgroundColor)
+        self.transparency[:,:] = transparency
 
     def getCanvasText(self):
         '''
