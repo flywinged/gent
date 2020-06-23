@@ -23,7 +23,8 @@ setup(
         'sty',
         'dataclasses',
         'csaps',
-        "Pillow"
+        "Pillow",
+        "asciimatics"
     ],
     classifiers = [
         'Development Status :: 3 - Alpha',
