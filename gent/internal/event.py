@@ -2,11 +2,11 @@
 
 from dataclasses import dataclass
 
+from asciimatics import event as asciimaticsEvent
+
 from enum import Enum, auto
 
 from typing import Tuple
-
-from sys import platform
 
 class EVENT_HANDLER(Enum):
 
@@ -14,80 +14,23 @@ class EVENT_HANDLER(Enum):
     DID_NOT_HANDLE = auto()
     EXIT = auto()
 
-EVENT_MAP = {
+class EVENTS(Enum):
+    '''
+    All normally supported utf-8 values can be accessed by event.keyNumber == ord(c) where c is the character to match.
+    (These can also be accessed through the event.char value if you prefer, but only for events with a keyNumber that is
+    greater than or equal to 0 and less than 256) Mouse events are automatically assigned an keyNumber of 1000.
 
-    (3, ) : "EXIT",
+    Special characters and mouse motions and clicks are listed here and can be accessed through event.key == EVENTS.[~~~]
+    '''
 
-    (8, ):  "BACKSPACE",
-    (9, ):  "TAB",
-    (13, ): "RETURN",
-    (27, ): "ESCAPE",
+    # Default for events which don't have special names
+    NONE = auto()
 
-    (32, ): "SPACE",
-
-    (127, ): "BACKSPACE"
-   
-}
-
-WINDOWS_EVENT_MAP = {
-
-    (224, 72): "UP",
-    (224, 75): "LEFT",
-    (224, 77): "RIGHT",
-    (224, 80): "DOWN",
-
-    (0, 59): "F1",
-    (0, 60): "F2",
-    (0, 61): "F3",
-    (0, 62): "F4",
-    (0, 63): "F5",
-    (0, 64): "F6",
-    (0, 65): "F7",
-    (0, 66): "F8",
-    (0, 67): "F9",
-    (0, 68): "F10",
-    (224, 133): "F11",
-    (224, 134): "F12",
-
-    (224, 71): "HOME",
-    (224, 73): "PAGE_UP",
-    (224, 79): "END",
-    (224, 81): "PAGE_DOWN",
-    (224, 82): "INSERT",
-    (224, 83): "DELETE",
-
-}
-
-LINUX_EVENT_MAP = {
-
-    (27, 91, 65): "UP",
-    (27, 91, 68): "LEFT",
-    (27, 91, 67): "RIGHT",
-    (27, 91, 66): "DOWN",
-
-    (27, 91, 49, 59, 50, 65): "SHIFT_UP",
-    (27, 91, 49, 59, 50, 68): "SHIFT_LEFT",
-    (27, 91, 49, 59, 50, 67): "SHIFT_RIGHT",
-    (27, 91, 49, 59, 50, 66): "SHIFT_DOWN",
-
-    (27, 79, 80): "F1",
-    (27, 79, 81): "F2",
-    (27, 79, 82): "F3",
-    (27, 79, 83): "F4",
-    (27, 91, 49, 53, 126): "F5",
-    (27, 91, 49, 55, 126): "F6",
-    (27, 91, 49, 56, 126): "F7",
-    (27, 91, 49, 57, 126): "F8",
-    (27, 91, 50, 48, 126): "F9",
-
-    (27, 91, 72): "HOME",
-    (27, 91, 53, 126): "PAGE_UP",
-    (27, 91, 70): "END",
-    (27, 91, 54, 126): "PAGE_DOWN",
-    (27, 91, 50, 126): "INSERT",
-    (27, 91, 50, 126): "DELETE",
-
-}
+    # Mouse events
+    MOUSE_MOTION = auto()
+    LEFT_CLICK = auto()
+    RIGHT_CLICK = auto()
+    DOUBLE_CLICK = auto()
 
 @dataclass
 class Event:
@@ -95,34 +38,53 @@ class Event:
     Custom event types.
     '''
 
-    # Return value of getch
-    keyNumber: Tuple[int] = None
+    # Event int value
+    keyNumber: int = None
 
-    # name of the key
-    keyName: str = None
+    # If this is a special event, that event is given an ID to match against EVENT.[~~~]
+    ID: str = None
 
-    # Character Value
+    # chr value of the key if it exists
     char: str = None
 
-def createEvent(e):
+    # position of the mouse if it exists
+    pos: Tuple[int] = None
+
+
+# Map for createEvent() function to use to remember important characters
+eventMap = {
+
+
+
+}
+
+# TERM=xterm-1003 to enable mouse movement events.
+def createEvent(e: asciimaticsEvent) -> Event:
     '''
     Return a simple event object describing what input the user gave.
     '''
 
-    event = Event()
-    if len(e) == 1:
-        event.char = chr(e[0])
-        event.keyName  = chr(e[0])
+    if type(e) == asciimaticsEvent.KeyboardEvent:
 
-    if e in EVENT_MAP:
-        event.keyName = EVENT_MAP[e]
-    
-    elif "win" in platform.lower() and e in WINDOWS_EVENT_MAP:
-        event.keyName = WINDOWS_EVENT_MAP[e]
-    
-    elif e in LINUX_EVENT_MAP:
-        event.keyName = LINUX_EVENT_MAP[e]
+        event = Event(
+            e.key_code,
+            eventMap[e.key_code] if e.key_code in eventMap else EVENTS.NONE,
+            chr(e.key_code) if e.key_code >= 0 and e.key_code <= 255 else ""
+        )
 
-    event.keyNumber = e
+    if type(e) == asciimaticsEvent.MouseEvent:
 
+        ID = EVENTS.MOUSE_MOTION
+        if e.buttons == asciimaticsEvent.MouseEvent.LEFT_CLICK: ID = EVENTS.LEFT_CLICK
+        elif e.buttons == asciimaticsEvent.MouseEvent.RIGHT_CLICK: ID = EVENTS.RIGHT_CLICK
+        elif e.buttons == asciimaticsEvent.MouseEvent.DOUBLE_CLICK: ID = EVENTS.DOUBLE_CLICK
+        
+        event = Event(
+            1000,
+            ID,
+            None,
+            (e.x, e.y)
+        )
+
+    print(event)
     return event

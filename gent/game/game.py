@@ -4,6 +4,8 @@ import os
 import sys
 import time
 
+from asciimatics.screen import ManagedScreen
+
 import colorama
 
 from typing import Tuple, Dict
@@ -11,7 +13,8 @@ from typing import Tuple, Dict
 from threading import Thread
 
 from ..internal import Event, GameObject, Canvas, timeFunction, GameState
-from .getch import EventGetter
+from ..internal.event import createEvent
+# from .getch import EventGetter
 
 import traceback
 
@@ -66,12 +69,13 @@ class Game:
                     ########################
                     # PRINT WHAT WAS DRAWN #
                     ########################
-
-                    # Move the cursor back to the beginning of the screen
-                    print("%s" % colorama.Cursor.POS(), end = "")
                     
                     # Print the new screen.
-                    if self.game.isDisplayActive:
+                    if self.game.isDisplayActive and self.game.isActive:
+
+                        # Move the cursor back to the beginning of the screen
+                        print("%s" % colorama.Cursor.POS(), end = "")
+
                         canvas = self.game.activeCanvas
                         print(canvas.getCanvasText(), end = "")
                     
@@ -260,24 +264,27 @@ class Game:
         self.canvasDrawThread.start()
         self.updateThread.start()
 
+        self.isDisplayActive = False
+
         # Create the getch object and start an event loop
-        G = EventGetter()
-        while self.isActive:
-            event = G.getEvent()
+        with ManagedScreen() as screen:
+            while self.isActive:
 
-            # Control C
-            if event.keyName == "EXIT":
-                self.isActive = False
-            
-            # Control D
-            if event.keyNumber == (4, ):
-                self.isDisplayActive = not self.isDisplayActive
-            
-            # This is for error management. If something breaks, kill the game and print the error
-            try:
-                self.handleEvent(event)
-            except:
-                self.isActive = False                    
-                print(traceback.format_exc())
+                try:
+                    screen.wait_for_input(60 * 60)
+                    event = createEvent(screen.get_event())
 
-        G.getchThread.running = False
+                     # Control D
+                    if event.keyNumber == (4, ):
+                        self.isDisplayActive = not self.isDisplayActive
+                    
+                    # This is for error management. If something breaks, kill the game and print the error
+                    try:
+                        self.handleEvent(event)
+                    except:
+                        self.isActive = False                    
+                        print(traceback.format_exc())
+                
+                except KeyboardInterrupt:
+                    self.isActive = False
+                    break
