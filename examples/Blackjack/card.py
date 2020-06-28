@@ -14,11 +14,11 @@ class CardData:
     name:  str
     suit:  str
 
-cardBack, _ = loadPNG("examples/Blackjack/resources/card-back.png", (20, 15))
-cardHeart, _ = loadPNG("examples/Blackjack/resources/card-heart.png", (20, 15))
-cardDiamond, _ = loadPNG("examples/Blackjack/resources/card-diamond.png", (20, 15))
-cardSpade, _ = loadPNG("examples/Blackjack/resources/card-spade.png", (20, 15))
-cardClub, _ = loadPNG("examples/Blackjack/resources/card-club.png", (20, 15))
+cardBackBackground, cardBackText, _ = loadPNG("examples/Blackjack/resources/card-back.png", (20, 15))
+cardHeartBackground, cardHeartText, _ = loadPNG("examples/Blackjack/resources/card-heart.png", (20, 15))
+cardDiamondBackground, cardDiamondText, _ = loadPNG("examples/Blackjack/resources/card-diamond.png", (20, 15))
+cardSpadeBackground, cardSpadeText, _ = loadPNG("examples/Blackjack/resources/card-spade.png", (20, 15))
+cardClubBackground, cardClubText, _ = loadPNG("examples/Blackjack/resources/card-club.png", (20, 15))
 
 def createDeck() -> List[CardData]:
     '''
@@ -80,21 +80,30 @@ class Card(GameObject):
 
         '''
 
+        # Lower half block
+        self.bufferCanvas.characters[:,1:] = 9600
+
         if self.state == "visible":
             self.cardName.drawOn(self)
 
             # Draw the suit of the card
-            cardBackground = cardHeart
+            cardBackground = cardHeartBackground
+            cardText = cardHeartText
             if self.data.suit == "Diamonds":
-                cardBackground = cardDiamond
+                cardBackground = cardDiamondBackground
+                cardText = cardDiamondText
             elif self.data.suit == "Clubs":
-                cardBackground = cardClub
+                cardBackground = cardClubBackground
+                cardText = cardClubText
             elif self.data.suit == "Spades":
-                cardBackground = cardSpade
+                cardBackground = cardSpadeBackground
+                cardText = cardSpadeText
 
             self.bufferCanvas.backgroundColors[:,1:,:] = cardBackground[:,:,:]
+            self.bufferCanvas.textColors[:,1:,:] = cardText[:,:,:]
         
         else:
 
             # Draw some patern on the back of the card
-            self.bufferCanvas.backgroundColors[:,1:,:] = cardBack[:,:,:]
+            self.bufferCanvas.backgroundColors[:,1:,:] = cardBackBackground[:,:,:]
+            self.bufferCanvas.textColors[:,1:,:] = cardBackText[:,:,:]

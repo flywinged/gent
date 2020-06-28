@@ -133,12 +133,16 @@ class GameObject:
             destinationY = numpy.array(textUpdates[1]) + y
 
             destination.characters[destinationX, destinationY] = self.activeCanvas.characters[textUpdates]
-            destination.textColors[destinationX, destinationY] = self.activeCanvas.textColors[textUpdates]
 
-            # Then we apply transparencies to the background.
+            # Then we apply transparencies to the background and text colors.
             destination.backgroundColors[x:x + w, y:y + h] = (
                 destination.backgroundColors[x:x + w, y:y + h].astype(numpy.float32) * numpy.expand_dims(1.0 - self.activeCanvas.transparency.astype(numpy.float32) / 255, 2) +
                 self.activeCanvas.backgroundColors.astype(numpy.float32) * numpy.expand_dims(self.activeCanvas.transparency.astype(numpy.float32) / 255, 2)
+            ).astype(numpy.uint8)
+
+            destination.textColors[x:x + w, y:y + h] = (
+                destination.textColors[x:x + w, y:y + h].astype(numpy.float32) * numpy.expand_dims(1.0 - self.activeCanvas.transparency.astype(numpy.float32) / 255, 2) +
+                self.activeCanvas.textColors.astype(numpy.float32) * numpy.expand_dims(self.activeCanvas.transparency.astype(numpy.float32) / 255, 2)
             ).astype(numpy.uint8)
             
         else:

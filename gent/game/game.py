@@ -66,12 +66,13 @@ class Game:
                     ########################
                     # PRINT WHAT WAS DRAWN #
                     ########################
-
-                    # Move the cursor back to the beginning of the screen
-                    print("%s" % colorama.Cursor.POS(), end = "")
                     
                     # Print the new screen.
                     if self.game.isDisplayActive:
+                        
+                        # Move the cursor back to the beginning of the screen
+                        print("%s" % colorama.Cursor.POS(), end = "")
+
                         canvas = self.game.activeCanvas
                         print(canvas.getCanvasText(), end = "")
                     
@@ -81,7 +82,7 @@ class Game:
 
                     # Sleep the appropriate amount of time to keep the drawDelay up
                     time.sleep(timeLeft)
-
+                
             except:
                 self.game.isActive = False
                 print(traceback.format_exc())
