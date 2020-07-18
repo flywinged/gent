@@ -8,3 +8,6 @@ CONNECTION_RIGHT = { "f" }
 CONNECTION_LEFT  = { "s" }
 CONNECTION_UP    = { "e" }
 CONNECTION_DOWN  = { "d" }
+
+# HOTKEYS
+HOTKEY_OPEN_HELP = { "h" }

@@ -3,9 +3,10 @@
 from .event import Event
 from .event import EVENT_HANDLER
 
-from .gameObject import GameObject
-from .gameObject import ObjectHandler
-from .gameObject import Selection
+from .game import GameObject
+from .game import ObjectHandler
+from .game import Selection
+from .game import Game
 
 from .gameState import GameState
 
