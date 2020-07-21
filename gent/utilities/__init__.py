@@ -3,3 +3,4 @@
 from .text import recursiveSplit
 
 from .image import loadPNG
+from .image import ImageData

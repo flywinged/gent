@@ -8,6 +8,9 @@ import platform
 
 from sty import fg, bg
 
+from ..utilities import ImageData
+from typing import Tuple
+
 class Canvas:
     '''
     The Canvas class holds all the screen information necessary to draw in the terminal.
@@ -35,6 +38,21 @@ class Canvas:
 
         # Populate the character and format arrays with default values
         self.clearCanvas(" ", 0)
+    
+    def drawImage(self, image: ImageData, location: Tuple[int] = (0, 0)):
+        '''
+        Draw imageData onto a location on the canvas
+        '''
+
+        startX = location[0]
+        endX = location[0] + image.backgroundColorData.shape[0]
+        startY = location[1]
+        endY = location[1] + image.backgroundColorData.shape[1]
+
+        self.backgroundColors[startX:endX, startY:endY, :] = image.backgroundColorData[:,:,:]
+        self.textColors[startX:endX, startY:endY, :] = image.textColorData[:,:,:]
+        self.transparency[startX:endX, startY:endY] = image.transparencyData[:,:]
+        self.characters[startX:endX, startY:endY] = image.characterData[:,:]
     
     def clearCanvas(self, clearCharacter: str = " ", textColor: tuple = (255, 255, 255), backgroundColor: tuple = (0, 0, 0), transparency: int = 0):
         '''

@@ -608,7 +608,7 @@ class Game:
             except:
                 self.game.isActive = False
                 print(traceback.format_exc())
-    
+            
     class UpdateThread(Thread):
         '''
 
@@ -685,7 +685,7 @@ class Game:
         self.bufferCanvas: Canvas = Canvas(self.width, self.height)
 
         # Determine what the active gameObject is
-        self.rootGameObject: GameObject = None
+        self.activeGameObject: GameObject = None
 
         # Whatever the active help object is
         self.helpObject: GameObject = None
@@ -753,6 +753,14 @@ class Game:
 
         return True
 
+    def clearGameObjects(self):
+        '''
+        Delete all game objects currently in the game.
+        '''
+
+        for gameObjectID in self.gameObjectsIDMap:
+            self.removeGameObject(self.gameObjectsIDMap[gameObjectID])
+
     def assignGameObjectLayer(self, gameObject: GameObject, newLayer: int):
         '''
         Reassign a gameobject's render layer.
@@ -779,8 +787,8 @@ class Game:
             self.helpObject.handleEvent(event)
 
         # Otherwise, the active game object will handle it.
-        elif self.rootGameObject:
-            self.rootGameObject.handleEvent(event)
+        elif self.activeGameObject:
+            self.activeGameObject.handleEvent(event)
 
     def switchBuffers(self):
         '''
@@ -810,6 +818,7 @@ class Game:
             # Control C
             if event.keyName == "EXIT":
                 self.isActive = False
+                self.isDisplayActive = False
             
             # Control D
             if event.keyNumber == (4, ):
