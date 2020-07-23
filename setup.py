@@ -21,8 +21,6 @@ setup(
         'numpy',
         'colorama',
         'sty',
-        'dataclasses',
-        'csaps',
         "Pillow"
     ],
     classifiers = [
