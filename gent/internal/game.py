@@ -617,7 +617,7 @@ class Game:
                     time.sleep(timeLeft)
                 
             except:
-                self.game.isActive = False
+                self.game.quit()
                 print(traceback.format_exc())
             
     class UpdateThread(Thread):
@@ -656,7 +656,7 @@ class Game:
                     time.sleep(timeLeft)
                         
             except:
-                self.game.isActive = False
+                self.game.quit()
                 print(traceback.format_exc())
 
     def __init__(self, gameState: GameState, canvasSize: Tuple[int, int], updateDelay: float = 1 / 60, drawDelay: float = 1 / 60):
@@ -859,6 +859,6 @@ class Game:
             try:
                 self._handleEvent(event)
             except:
-                self.isActive = False                    
+                self.quit()                    
                 print(traceback.format_exc())
 
