@@ -75,7 +75,7 @@ class Card(GameObject):
 
         self.state: str = "visible"
     
-    def _setValues(self):
+    def setValues(self):
         '''
 
         '''

@@ -59,10 +59,10 @@ class TextBox(GameObject):
 
         for textLineData in self.textLineDataList:
             textLineData.textLine.text = ""
-            textLineData.textLine.setValues()
+            textLineData.textLine._setValues()
             textLineData.textIndex = 0
 
-    def _setValues(self):
+    def setValues(self):
         '''
         **kwargs
             lines: Presplit text data
@@ -86,6 +86,6 @@ class TextBox(GameObject):
                 textLineData.textLine.text = ""
                 textLineData.textIndex = (i - len(lines)) * self.w + lineStart
             
-            textLineData.textLine.setValues()
+            textLineData.textLine._setValues()
             textLineData.textLine.draw(self.bufferCanvas, (self.xOffset, self.yOffset))
         

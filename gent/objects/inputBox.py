@@ -39,7 +39,7 @@ class InputBox(TextBox):
         # Whether or not the input box needs to update where the cursor currently is
         self.updateCursor: bool = True
     
-    def _handleEvent(self, event: Event):
+    def handleEvent(self, event: Event):
         '''
 
         '''
@@ -235,8 +235,8 @@ class InputBox(TextBox):
         self.cursorPosition = self.getCursorPosition()
         self.realCursorPosition = self.cursorPosition[0] + self.xOffset, self.cursorPosition[1] + self.yOffset
         
-    def _setValues(self):
-        TextBox._setValues(self)
+    def setValues(self):
+        TextBox.setValues(self)
 
         # If the cursor position needs to be updated (such as when text is added)
         if self.updateCursor:

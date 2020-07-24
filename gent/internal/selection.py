@@ -43,21 +43,21 @@ class Selection_Fill(Selection):
         self.gameObject.xOffset = 0
         self.gameObject.yOffset = 0
     
-    def _select(self):
+    def select(self):
         '''
         How to draw the selection indication about the gameObject
         '''
 
         self.gameObject.bufferCanvas.backgroundColors[:,:] = numpy.array(self.selectColor)
     
-    def _hover(self):
+    def hover(self):
         '''
         How to draw the hover indication about the gameObject
         '''
 
         self.gameObject.bufferCanvas.backgroundColors[:,:] = numpy.array(self.hoverColor)
     
-    def _default(self):
+    def default(self):
         '''
         How to draw the default indication about the gameObject
         '''
@@ -146,21 +146,21 @@ class Selection_Box(Selection):
         if "r" in self.borders:
             self.gameObject.bufferCanvas.backgroundColors[self.gameObject.realW - self.borders["r"][0],:] = numpy.array(color)
 
-    def _select(self):
+    def select(self):
         '''
         How to draw the selection indication about the gameObject
         '''
 
         self.draw(self.selectColor)
 
-    def _hover(self):
+    def hover(self):
         '''
         How to draw the hover indication about the gameObject
         '''
 
         self.draw(self.hoverColor)
     
-    def _default(self):
+    def default(self):
         '''
         How to draw the default indication about the gameObject
         '''

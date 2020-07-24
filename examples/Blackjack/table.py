@@ -41,7 +41,7 @@ class Table(GameObject):
                 STATE.dealerCards[i]
             ))
 
-    def _setValues(self):
+    def setValues(self):
         '''
 
         '''

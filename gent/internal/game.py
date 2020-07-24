@@ -137,7 +137,7 @@ class GameObject:
         # Don't do anything if the object is hidden
         if self.hide: return
 
-        self.setValues()
+        self._setValues()
 
         x, y, w, h = self.realX + offset[0], self.realY + offset[1], self.realW, self.realH
 
@@ -168,7 +168,7 @@ class GameObject:
             destination.textColors[x:x + w, y:y + h] = self.activeCanvas.textColors
             destination.backgroundColors[x:x + w, y:y + h] = self.activeCanvas.backgroundColors
 
-    def _handleEvent(self, event: Event): #pylint: disable=unused-argument
+    def handleEvent(self, event: Event): #pylint: disable=unused-argument
         '''
         Allow the gameObject to handle an event internally.
 
@@ -180,7 +180,7 @@ class GameObject:
         # Virtual event handler to be overwritten by all children
         return EVENT_HANDLER.DID_NOT_HANDLE
 
-    def handleEvent(self, event: Event):
+    def _handleEvent(self, event: Event):
         '''
         How the game object should handle events
         '''
@@ -193,38 +193,38 @@ class GameObject:
             if event.keyName == "ESCAPE" or event.keyName == "TAB":
                 return EVENT_HANDLER.EXIT
 
-            handlerReturn = self._handleEvent(event)
+            handlerReturn = self.handleEvent(event)
 
         # Otherwise, let the object handler handle the event
         else:
-            handlerReturn = self.objectHandler.handleEvent(event)
+            handlerReturn = self.objectHandler._handleEvent(event)
 
         # After the object handler tackles the event, 
-        self._onEvent(event)
+        self.onEvent(event)
         
         return handlerReturn
 
-    def _onEvent(self, event: Event):
+    def onEvent(self, event: Event):
         '''
         Is called each time the gameObject captures an event
         '''
 
         # Virtual function to be overwritten
 
-    def _update(self):
+    def update(self):
         '''
         Update function to call each frame.
         '''
 
         # Virtual function to be overwritten by any children which need it
 
-    def update(self):
+    def _update(self):
         if self.objectHandler != None:
-            self.objectHandler.update()
+            self.objectHandler._update()
         
-        self._update()
+        self.update()
 
-    def _setValues(self):
+    def setValues(self):
         '''
         Update the gameobject values to reflect what has been added.
 
@@ -233,76 +233,83 @@ class GameObject:
         
         # Virtual function to be overwritten by any children which need it
 
-    def _setValuesAfterSelection(self):
+    def setValuesAfterSelection(self):
         '''
         Update the gameObject values after the selectionHandler has been called
         '''
 
         # Virtual function to be overwritten by children
 
-    def setValues(self):
+    def _setValues(self):
         '''
         Handler for gameObject setting its internal values
         '''
 
         self.bufferCanvas.clearCanvas()
 
-        self._setValues()
+        self.setValues()
         
-        if self.selectionStatus == self.SELECTED: self.selectionHandler.select()
-        elif self.selectionStatus == self.HOVERED: self.selectionHandler.hover()
-        elif self.selectionStatus == self.OUTLINED: self.selectionHandler.default()
+        if self.selectionStatus == self.SELECTED: self.selectionHandler._select()
+        elif self.selectionStatus == self.HOVERED: self.selectionHandler._hover()
+        elif self.selectionStatus == self.OUTLINED: self.selectionHandler._default()
 
-        self._setValuesAfterSelection()
+        self.setValuesAfterSelection()
 
         self.swapBuffers()
     
-    def _onExit(self):
+    def onExit(self):
         '''
         When the object handler leaves the gameObject, what should the gameObject do
         '''
 
         # Virtual function to be overwritten by any children which need it
     
-    def onExit(self):
+    def _onExit(self):
         self.selectionStatus = self.HOVERED
-        self._onExit()
+        self.onExit()
+
+    def onPress(self):
+        '''
+        Called when the "enter" key is pressed on the game object from a parent.
+        '''
+
+        # Virtual Function to be overwritten by children which use it.
     
-    def _onEntry(self):
+    def onEntry(self):
         '''
         When the object handler selects the gameObject, what should the gameObject do
         '''
 
         # Virtual function to be overwritten by any children which need it
     
-    def onEntry(self):
+    def _onEntry(self):
         self.selectionStatus = self.SELECTED
-        self._onEntry()
+        self.onEntry()
 
         if self.objectHandler != None:
-            self.objectHandler.currentGameObject.onHoverEntry()
+            self.objectHandler.currentGameObject._onHoverEntry()
     
-    def _onHoverEntry(self):
+    def onHoverEntry(self):
         '''
         When the object handler hovers over the gameObject, what should the gameObject do
         '''
 
         # Virtual function to be overwritten by any children which need it
 
-    def onHoverEntry(self):
+    def _onHoverEntry(self):
         self.selectionStatus = self.HOVERED
-        self._onHoverEntry()
+        self.onHoverEntry()
     
-    def _onHoverExit(self):
+    def onHoverExit(self):
         '''
         When the object handler stops hovering over the gameObject, what should the gameObject do
         '''
 
         # Virtual function to be overwritten by any children which need it
     
-    def onHoverExit(self):
+    def _onHoverExit(self):
         self.selectionStatus = self.OUTLINED
-        self._onHoverExit()
+        self.onHoverExit()
 
 
 ##################
@@ -406,14 +413,14 @@ class ObjectHandler:
         self.gameObjects.add(gameObject)
         gameObject.parentObjectHandler = self
 
-    def handleEvent(self, event: Event):
+    def _handleEvent(self, event: Event):
 
         # If we are selecting an object, we need to determine
         if self.selectingObject:
 
             # If Escape is pressed, the object handler should return False, indicating the object handler should be broken out of the event loop.
             if event.keyName in CONNECTION_BACK:
-                self.currentGameObject.onHoverExit()
+                self.currentGameObject._onHoverExit()
                 return EVENT_HANDLER.EXIT
 
             # Determine which game object is in the location determined by the key press
@@ -439,17 +446,17 @@ class ObjectHandler:
             
             # If return is pressed, we are now switching to object handling mode
             if event.keyName in CONNECTION_ENTER:
-                self.currentGameObject.onEntry()
-
+                self.currentGameObject.onPress()
                 if self.currentGameObject.isSelectable:
+                    self.currentGameObject._onEntry()
                     self.selectingObject = False
-            
-            return EVENT_HANDLER.HANDLED
+                else:
+                    self.currentGameObject.onEntry()
                     
         # Otherwise, we need to pass the event to the selected gameobject
-        if self.currentGameObject.handleEvent(event) == EVENT_HANDLER.EXIT:
-            self.currentGameObject.onExit()
-            self.currentGameObject.onHoverEntry()
+        if self.currentGameObject._handleEvent(event) == EVENT_HANDLER.EXIT:
+            self.currentGameObject._onExit()
+            self.currentGameObject._onHoverEntry()
 
             self.selectingObject = True
             return EVENT_HANDLER.HANDLED
@@ -461,14 +468,16 @@ class ObjectHandler:
 
         if gameObject in self.gameObjects:
 
-            self.currentGameObject.onHoverExit()
+            if self.currentGameObject is not None:
+                self.currentGameObject._onHoverExit()
+            
             self.currentGameObject = gameObject
-            self.currentGameObject.onHoverEntry()
+            self.currentGameObject._onHoverEntry()
 
-    def update(self):
+    def _update(self):
 
         if not self.selectingObject and self.currentGameObject != None:
-            self.currentGameObject.update()
+            self.currentGameObject._update()
 
 
 #############
@@ -502,35 +511,35 @@ class Selection:
 
         # Virtual function to be overwritten by children.
     
-    def _select(self):
+    def select(self):
         '''
         How to draw the selection indication about the gameObject
         '''
 
         # Virtual function to be overwritten by children.
 
-    def select(self, override: bool = False):
-        if self.drawSelect or override: self._select()
+    def _select(self, override: bool = False):
+        if self.drawSelect or override: self.select()
     
-    def _hover(self):
+    def hover(self):
         '''
         How to draw the hover indication about the gameObject
         '''
 
         # Virtual function to be overwritten by children.
     
-    def hover(self, override: bool = False):
-        if self.drawHover or override: self._hover()
+    def _hover(self, override: bool = False):
+        if self.drawHover or override: self.hover()
     
-    def _default(self):
+    def default(self):
         '''
         How to draw the default indication about the gameObject
         '''
 
         # Virtual function to be overwritten by children.
     
-    def default(self, override: bool = False):
-        if self.drawDefault or override: self._default()
+    def _default(self, override: bool = False):
+        if self.drawDefault or override: self.default()
 
 
 
@@ -630,12 +639,12 @@ class Game:
                     self.game.gameState.updateTime()
 
                     # Then perform any global game updates
-                    self.game.update()
+                    self.game._update()
 
                     # Then we want to update every gameObject
                     for gameObjectID in self.game.gameObjectsIDMap:
                         gameObject = self.game.gameObjectsIDMap[gameObjectID]
-                        gameObject.update()
+                        gameObject._update()
                     
                     # Now we need to wait the appropriate amount of time before calling the next update fram
                     timeLeft = self.game.updateDelay - (timeFunction() - self.game.gameState.now)
@@ -769,7 +778,7 @@ class Game:
         self.removeGameObject(gameObject)
         self.addGameObject(gameObject, newLayer)
 
-    def handleEvent(self, event: Event):
+    def _handleEvent(self, event: Event):
         '''
         
         '''
@@ -784,11 +793,11 @@ class Game:
 
         # If the help window is active, it captures the event.
         elif self.helpObject in self.gameObjectsIDMap:
-            self.helpObject.handleEvent(event)
+            self.helpObject._handleEvent(event)
 
         # Otherwise, the active game object will handle it.
         elif self.activeGameObject:
-            self.activeGameObject.handleEvent(event)
+            self.activeGameObject._handleEvent(event)
 
     def switchBuffers(self):
         '''
@@ -797,7 +806,7 @@ class Game:
 
         self.activeCanvas, self.bufferCanvas = self.bufferCanvas, self.activeCanvas
 
-    def update(self):
+    def _update(self):
         '''
         Virtual function to overwrite by children. Called each loop in the updateLoop
         '''
@@ -826,7 +835,7 @@ class Game:
             
             # This is for error management. If something breaks, kill the game and print the error
             try:
-                self.handleEvent(event)
+                self._handleEvent(event)
             except:
                 self.isActive = False                    
                 print(traceback.format_exc())

@@ -25,7 +25,7 @@ class BaseSelectorObject(GameObject):
         # Whether or not this selectorObject has data
         self.hasData: bool = False
     
-    def _onEntry(self):
+    def onEntry(self):
         '''
         When enter is pressed on the object, the object should toggle whether or not it has been selected.
         '''
@@ -33,12 +33,12 @@ class BaseSelectorObject(GameObject):
         self.isSelected = not self.isSelected
         if not self.isSelected: self.selectionStatus = self.HOVERED
 
-    def _setValuesAfterSelection(self):
+    def setValuesAfterSelection(self):
         '''
         Make sure the SelectorText draws the correct selection.
         '''
 
-        if self.isSelected: self.selectionHandler.select(override = True)
+        if self.isSelected: self.selectionHandler._select(override = True)
     
     def updateSelectorObject(self, data):
         '''
@@ -64,7 +64,7 @@ class DefaultSelectorObject(BaseSelectorObject):
         
         self.textBox: TextBox = TextBox(Box(0, 0, self.w, self.h), "", (255, 255, 255), (0, 0, 0))
     
-    def _setValues(self):
+    def setValues(self):
         self.textBox.drawOn(self)
     
     def updateSelectorObject(self, data):
@@ -201,7 +201,7 @@ class Selector(GameObject):
     def removeSelectorTextObject(self, position: Tuple[int, int]):
         self.getSelectorObject(self.selectedGridPositions.pop(self.selectedGridPositions.index(position))).isSelected = False
 
-    def _onEvent(self, event: Event):
+    def onEvent(self, event: Event):
         '''
         When something happens to the selector object, make sure all the object's "isSelected" attribute gets correctly updated.
         '''
@@ -251,7 +251,7 @@ class Selector(GameObject):
         # Then set the text in each selectorObject to match the new page
         self.updateSelectorObjects()
 
-    def _setValues(self):
+    def setValues(self):
 
         # Draw each selectorText object on the convas        
         for selectorObject in self.getSelectorObjects():

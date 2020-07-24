@@ -25,7 +25,7 @@ class TextLine(GameObject):
         self.lineStart: int = 0
         self.lineEnd: int = 0
 
-    def _setValues(self):
+    def setValues(self):
 
         # Create adjusted text to ignore the trailing space
         adjustedText = self.text

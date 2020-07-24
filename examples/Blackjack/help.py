@@ -10,7 +10,7 @@ class BlackjackHelp(GameObject):
     def __init__(self):
         GameObject.__init__(self, Box(0, 0, 80, 32))
     
-    def _setValues(self):
+    def setValues(self):
         '''
 
         '''
