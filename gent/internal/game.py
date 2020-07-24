@@ -596,7 +596,7 @@ class Game:
 
                     for layer in layerList:
                         gameObjects = self.game.layerToGameObjectIDMap[layer]
-                        for gameObjectID in gameObjects:
+                        for gameObjectID in list(gameObjects):
 
                             gameObject: GameObject
                             try:
