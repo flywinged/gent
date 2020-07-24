@@ -24,6 +24,12 @@ class PlayButton(TextLine):
             game=game,
             selectionHandler=Selection_Fill(defaultColor=(60, 15, 90))
         )
+    
+        self.game: Game = game
+
+    def onPress(self):
+
+        self.game.goToScreen("Game")
 
 class QuitButton(TextLine):
     '''

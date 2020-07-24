@@ -5,7 +5,7 @@ from .gameState import STATE
 from .table import Table
 from .help import BlackjackHelp
 
-from .screens import setStart
+from .screens import setStart, setGame
 
 from gent import Game
 def run():
@@ -15,8 +15,10 @@ def run():
 
     g.helpObject = BlackjackHelp()
 
-    setStart(g)
+    g.addScreen("Start", setStart)
+    g.addScreen("Game", setGame)
 
+    g.goToScreen("Start")
     # table = Table()
     # g.addGameObject(table)
 

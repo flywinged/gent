@@ -2,6 +2,7 @@
 
 
 from typing import Tuple, Dict, Set
+from types import FunctionType
 
 from dataclasses import dataclass
 
@@ -417,8 +418,17 @@ class ObjectHandler:
 
     def _handleEvent(self, event: Event):
 
+        # Can't do anything if there is not an active object
+        if self.currentGameObject is None:
+            
+            if event.keyName in CONNECTION_BACK:
+                self.gameObject.onExit()
+            
+            if event.keyName in self.hotKeys:
+                nextGameObject = self.hotKeys[event.keyName]
+
         # If we are selecting an object, we need to determine
-        if self.selectingObject:
+        elif self.selectingObject:
 
             # If Escape is pressed, the object handler should return False, indicating the object handler should be broken out of the event loop.
             if event.keyName in CONNECTION_BACK:
@@ -456,7 +466,7 @@ class ObjectHandler:
                     self.currentGameObject.onEntry()
                     
         # Otherwise, we need to pass the event to the selected gameobject
-        if self.currentGameObject._handleEvent(event) == EVENT_HANDLER.EXIT:
+        elif self.currentGameObject._handleEvent(event) == EVENT_HANDLER.EXIT:
             self.currentGameObject._onExit()
             self.currentGameObject._onHoverEntry()
 
@@ -665,7 +675,10 @@ class Game:
         self.gameState: GameState = gameState
 
         # Object used to manage event thread
-        self.EventGetter: EventGetter = EventGetter()
+        self.eventGetter: EventGetter = EventGetter()
+
+        # Dictionary containing all the screens for this game and the respective functions to get there
+        self.screens: Dict[str, FunctionType] = {}
 
         # Set the height and width of the game, and then set those values in the terminal
         self.width: int = canvasSize[0]
@@ -772,7 +785,7 @@ class Game:
         Delete all game objects currently in the game.
         '''
 
-        for gameObjectID in self.gameObjectsIDMap:
+        for gameObjectID in list(self.gameObjectsIDMap):
             self.removeGameObject(self.gameObjectsIDMap[gameObjectID])
 
     def assignGameObjectLayer(self, gameObject: GameObject, newLayer: int):
@@ -816,6 +829,29 @@ class Game:
         Virtual function to overwrite by children. Called each loop in the updateLoop
         '''
     
+    def addScreen(self, screenName: str, function: FunctionType):
+        '''
+        Adds to a dictionary a function which will reset the game to a specific value.
+        The function must have a game obbject as its first and only argument.
+        '''
+
+        if callable(function):
+            self.screens[screenName] = function
+        else:
+            raise "Function parameter is not a callable."
+
+    
+    def goToScreen(self, screenName: str):
+        '''
+        Calls the saved screen function by passing in self.
+        '''
+
+        if screenName in self.screens:
+            self.clearGameObjects()
+            self.screens[screenName](self)
+        else:
+            raise "Screen " + screenName + " not understood."
+    
     def quit(self):
         '''
         Quits the game by turning off al the threads and then returning
@@ -828,12 +864,12 @@ class Game:
         while self.updateThread.isAlive(): time.sleep(0.05)
 
         # Clsoe the getch thread
-        self.EventGetter.getchThread.running = False
-        keyboard = pynput.keyboard.Controller()
+        self.eventGetter.getchThread.running = False
         print("Succesfully Exitted Game")
         print("\r", end = "")
 
         # Simulate a keypress to end the getch thread
+        keyboard = pynput.keyboard.Controller()
         keyboard.press("a")
 
     def gameLoop(self):
@@ -845,7 +881,7 @@ class Game:
         self.updateThread.start()
 
         while self.isActive:
-            event = self.EventGetter.getEvent()
+            event = self.eventGetter.getEvent()
 
             # Control C
             if event.keyName == "EXIT":
