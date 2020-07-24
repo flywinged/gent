@@ -597,7 +597,12 @@ class Game:
                     for layer in layerList:
                         gameObjects = self.game.layerToGameObjectIDMap[layer]
                         for gameObjectID in gameObjects:
-                            gameObject = self.game.gameObjectsIDMap[gameObjectID]
+
+                            gameObject: GameObject
+                            try:
+                                gameObject = self.game.gameObjectsIDMap[gameObjectID]
+                            except KeyError:
+                                continue
                             gameObject.draw(canvas)
                     
                     if self.game.helpActive:
@@ -654,8 +659,14 @@ class Game:
                     self.game._update()
 
                     # Then we want to update every gameObject
-                    for gameObjectID in self.game.gameObjectsIDMap:
-                        gameObject = self.game.gameObjectsIDMap[gameObjectID]
+                    for gameObjectID in list(self.game.gameObjectsIDMap):
+
+                        gameObject: GameObject
+                        try:
+                            gameObject = self.game.gameObjectsIDMap[gameObjectID]
+                        except KeyError:
+                            continue
+                        
                         gameObject._update()
                     
                     # Now we need to wait the appropriate amount of time before calling the next update fram
