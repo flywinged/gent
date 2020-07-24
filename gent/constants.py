@@ -3,7 +3,7 @@
 
 # Connection Constants
 CONNECTION_BACK  = { "TAB" }
-CONNECTION_ENTER = { "ENTER" }
+CONNECTION_ENTER = { "RETURN" }
 CONNECTION_RIGHT = { "f" }
 CONNECTION_LEFT  = { "s" }
 CONNECTION_UP    = { "e" }

@@ -27,6 +27,8 @@ from .timing import timeFunction
 from .gameState import GameState
 from .getch import EventGetter
 
+import pynput
+
 import traceback
 
 
@@ -662,6 +664,9 @@ class Game:
         # Initialize the gameState
         self.gameState: GameState = gameState
 
+        # Object used to manage event thread
+        self.EventGetter: EventGetter = EventGetter()
+
         # Set the height and width of the game, and then set those values in the terminal
         self.width: int = canvasSize[0]
         self.height: int = canvasSize[1]
@@ -810,6 +815,26 @@ class Game:
         '''
         Virtual function to overwrite by children. Called each loop in the updateLoop
         '''
+    
+    def quit(self):
+        '''
+        Quits the game by turning off al the threads and then returning
+        '''
+
+        self.isActive = False
+        self.isDisplayActive = False
+
+        while self.canvasDrawThread.isAlive(): time.sleep(0.05)
+        while self.updateThread.isAlive(): time.sleep(0.05)
+
+        # Clsoe the getch thread
+        self.EventGetter.getchThread.running = False
+        keyboard = pynput.keyboard.Controller()
+        print("Succesfully Exitted Game")
+        print("\r", end = "")
+
+        # Simulate a keypress to end the getch thread
+        keyboard.press("a")
 
     def gameLoop(self):
         '''
@@ -819,15 +844,12 @@ class Game:
         self.canvasDrawThread.start()
         self.updateThread.start()
 
-        # Create the getch object and start an event loop
-        G = EventGetter()
         while self.isActive:
-            event = G.getEvent()
+            event = self.EventGetter.getEvent()
 
             # Control C
             if event.keyName == "EXIT":
-                self.isActive = False
-                self.isDisplayActive = False
+                self.quit()
             
             # Control D
             if event.keyNumber == (4, ):
@@ -840,4 +862,3 @@ class Game:
                 self.isActive = False                    
                 print(traceback.format_exc())
 
-        G.getchThread.running = False

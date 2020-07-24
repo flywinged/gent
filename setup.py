@@ -21,7 +21,8 @@ setup(
         'numpy',
         'colorama',
         'sty',
-        "Pillow"
+        "Pillow",
+        "pynput"
     ],
     classifiers = [
         'Development Status :: 3 - Alpha',

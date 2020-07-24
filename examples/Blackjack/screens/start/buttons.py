@@ -42,3 +42,9 @@ class QuitButton(TextLine):
             game=game,
             selectionHandler=Selection_Fill(defaultColor=(60, 15, 90))
         )
+
+        self.game: Game = Game
+    
+    def onPress(self):
+
+        self.game.quit()
