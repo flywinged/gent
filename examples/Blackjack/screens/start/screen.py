@@ -14,6 +14,7 @@ class StartScreen(GameObject):
     def __init__(self):
         GameObject.__init__(self, Box(0, 0, 80, 32))
         self.addObjectHandler()
+        self.exitable = False
     
     def setValues(self):
 

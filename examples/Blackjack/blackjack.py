@@ -1,25 +1,23 @@
 # Copyright Clayton Brown 2019. See LICENSE file.
 
 # Main blackjack file. Create the game and starts the menu screen.
-from .gameState import STATE
-from .table import Table
-from .help import BlackjackHelp
+from .state import STATE
 
-from .screens import setStart, setGame
+from .screens import initializeScreens
 
 from gent import Game
+
 def run():
 
+    # Initialize the state
     STATE.deal()
+
+    # Create the game object
     g = Game(STATE, (80, 32))
 
-    g.helpObject = BlackjackHelp()
+    # Add all the screens to the game
+    initializeScreens(g)
 
-    g.addScreen("Start", setStart)
-    g.addScreen("Game", setGame)
-
+    # Start the game on the start screen
     g.goToScreen("Start")
-    # table = Table()
-    # g.addGameObject(table)
-
     g.gameLoop()

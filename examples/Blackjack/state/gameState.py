@@ -4,7 +4,7 @@ from gent import GameState
 
 from typing import List
 
-from .card import CardData, createDeck
+from .deck import CardData, Deck
 
 class BlackJackState(GameState):
     '''
@@ -14,7 +14,7 @@ class BlackJackState(GameState):
     def __init__(self):
         GameState.__init__(self)
 
-        self.deck: List[CardData] = []
+        self.deck: Deck = Deck()
 
         self.dealerCards: List[CardData] = []
         self.playerCards: List[CardData] = []
@@ -24,14 +24,14 @@ class BlackJackState(GameState):
     
     def deal(self):
 
-        # Create/Shuffle deck
-        self.deck = createDeck()
+        self.deck.reset()
+        self.deck.shuffle()
 
         # Deal the player and the dealer two cards.
-        self.playerCards.append(self.deck.pop(0))
-        self.dealerCards.append(self.deck.pop(0))
-        self.playerCards.append(self.deck.pop(0))
-        self.dealerCards.append(self.deck.pop(0))
+        self.playerCards.append(self.deck.cards.pop(0))
+        self.dealerCards.append(self.deck.cards.pop(0))
+        self.playerCards.append(self.deck.cards.pop(0))
+        self.dealerCards.append(self.deck.cards.pop(0))
 
     def hit(self, player: str):
         '''
@@ -39,9 +39,9 @@ class BlackJackState(GameState):
         '''
 
         if player == "player":
-            self.playerCards.append(self.deck.pop(0))
+            self.playerCards.append(self.deck.cards.pop(0))
         else:
-            self.dealerCards.append(self.deck.pop(0))
+            self.dealerCards.append(self.deck.cards.pop(0))
 
 
 STATE = BlackJackState()

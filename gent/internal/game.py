@@ -50,7 +50,7 @@ class GameObject:
 
     NEW_OBJECT_ID: int = 1
 
-    def __init__(self, box: Box, selectionHandler = None, isSelectable: bool = True, game: "Game" = None):
+    def __init__(self, box: Box, selectionHandler = None, isSelectable: bool = True, isExitable: bool = True, game: "Game" = None):
 
         # Game reference. This is automatically set with the gameObject is added to the game
         self.game: Game = game
@@ -67,6 +67,10 @@ class GameObject:
 
         # Whether or not pressing enter on the object will select it
         self.isSelectable: bool = isSelectable
+
+        # Whether or not the user can press EXIT to leave the object
+        #   Usually this is set to false for managing top level game objects.
+        self.exitable: bool = isExitable
 
         # Initialize the object handler
         self.objectHandler: ObjectHandler = None
@@ -193,7 +197,7 @@ class GameObject:
 
         # If there is no object handler, the object handles the event itself
         if self.objectHandler == None:
-            if event.keyName == "ESCAPE" or event.keyName == "TAB":
+            if self.exitable and event.keyName in CONNECTION_BACK:
                 return EVENT_HANDLER.EXIT
 
             handlerReturn = self.handleEvent(event)
@@ -421,7 +425,7 @@ class ObjectHandler:
         # Can't do anything if there is not an active object
         if self.currentGameObject is None:
             
-            if event.keyName in CONNECTION_BACK:
+            if event.keyName in CONNECTION_BACK and self.gameObject.exitable:
                 self.gameObject.onExit()
             
             if event.keyName in self.hotKeys:
@@ -431,7 +435,7 @@ class ObjectHandler:
         elif self.selectingObject:
 
             # If Escape is pressed, the object handler should return False, indicating the object handler should be broken out of the event loop.
-            if event.keyName in CONNECTION_BACK:
+            if event.keyName in CONNECTION_BACK and self.gameObject.exitable:
                 self.currentGameObject._onHoverExit()
                 return EVENT_HANDLER.EXIT
 
@@ -472,6 +476,8 @@ class ObjectHandler:
 
             self.selectingObject = True
             return EVENT_HANDLER.HANDLED
+        
+        return EVENT_HANDLER.DID_NOT_HANDLE
 
     def selectObject(self, gameObject: GameObject):
         '''
@@ -876,7 +882,7 @@ class Game:
 
         # Clsoe the getch thread
         self.eventGetter.getchThread.running = False
-        print("Succesfully Exitted Game")
+        print("Successfully Quit Game")
         print("\r", end = "")
 
         # Simulate a keypress to end the getch thread
