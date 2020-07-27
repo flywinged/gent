@@ -33,7 +33,7 @@ class BaseSelectorObject(GameObject):
         self.isSelected = not self.isSelected
         if not self.isSelected: self.selectionStatus = self.HOVERED
 
-    def setValuesAfterSelection(self):
+    def renderAfterSelection(self):
         '''
         Make sure the SelectorText draws the correct selection.
         '''
@@ -64,7 +64,7 @@ class DefaultSelectorObject(BaseSelectorObject):
         
         self.textBox: TextBox = TextBox(Box(0, 0, self.w, self.h), "", (255, 255, 255), (0, 0, 0))
     
-    def setValues(self):
+    def render(self):
         self.textBox.drawOn(self)
     
     def updateSelectorObject(self, data):
@@ -251,7 +251,7 @@ class Selector(GameObject):
         # Then set the text in each selectorObject to match the new page
         self.updateSelectorObjects()
 
-    def setValues(self):
+    def render(self):
 
         # Draw each selectorText object on the convas        
         for selectorObject in self.getSelectorObjects():

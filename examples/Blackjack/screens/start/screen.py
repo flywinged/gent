@@ -4,7 +4,7 @@ from gent import Box
 from gent import GameObject
 from gent import loadPNG
 
-START_IMAGE = loadPNG("examples/Blackjack/resources/homeScreen.png", (80, 32))
+START_IMAGE = loadPNG("examples/Blackjack/resources/homeScreen.png", (54, 19))
 
 class StartScreen(GameObject):
     '''
@@ -12,10 +12,10 @@ class StartScreen(GameObject):
     '''
 
     def __init__(self):
-        GameObject.__init__(self, Box(0, 0, 80, 32))
+        GameObject.__init__(self, Box(0, 0, 54, 19))
         self.addObjectHandler()
         self.exitable = False
     
-    def setValues(self):
+    def render(self):
 
         self.bufferCanvas.drawImage(START_IMAGE)

@@ -235,8 +235,8 @@ class InputBox(TextBox):
         self.cursorPosition = self.getCursorPosition()
         self.realCursorPosition = self.cursorPosition[0] + self.xOffset, self.cursorPosition[1] + self.yOffset
         
-    def setValues(self):
-        TextBox.setValues(self)
+    def render(self):
+        TextBox.render(self)
 
         # If the cursor position needs to be updated (such as when text is added)
         if self.updateCursor:

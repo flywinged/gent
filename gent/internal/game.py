@@ -1,5 +1,6 @@
 # Copyright Clayton Brown 2019. See LICENSE file.
 
+#pylint: disable=wildcard-import,protected-access,bare-except
 
 from typing import Tuple, Dict, Set
 from types import FunctionType
@@ -144,7 +145,7 @@ class GameObject:
         # Don't do anything if the object is hidden
         if self.hide: return
 
-        self._setValues()
+        self._render()
 
         x, y, w, h = self.realX + offset[0], self.realY + offset[1], self.realW, self.realH
 
@@ -196,10 +197,10 @@ class GameObject:
         handlerReturn = EVENT_HANDLER.DID_NOT_HANDLE
 
         # If there is no object handler, the object handles the event itself
-        if self.objectHandler == None:
+        if self.objectHandler is None:
             if self.exitable and event.keyName in CONNECTION_BACK:
-                return EVENT_HANDLER.EXIT
-
+                handlerReturn = EVENT_HANDLER.EXIT
+            
             handlerReturn = self.handleEvent(event)
 
         # Otherwise, let the object handler handle the event
@@ -231,7 +232,7 @@ class GameObject:
         
         self.update()
 
-    def setValues(self):
+    def render(self):
         '''
         Update the gameobject values to reflect what has been added.
 
@@ -240,29 +241,36 @@ class GameObject:
         
         # Virtual function to be overwritten by any children which need it
 
-    def setValuesAfterSelection(self):
+    def renderAfterSelection(self):
         '''
         Update the gameObject values after the selectionHandler has been called
         '''
 
         # Virtual function to be overwritten by children
 
-    def _setValues(self):
+    def _render(self):
         '''
         Handler for gameObject setting its internal values
         '''
 
         self.bufferCanvas.clearCanvas()
 
-        self.setValues()
+        self.render()
         
         if self.selectionStatus == self.SELECTED: self.selectionHandler._select()
         elif self.selectionStatus == self.HOVERED: self.selectionHandler._hover()
         elif self.selectionStatus == self.OUTLINED: self.selectionHandler._default()
 
-        self.setValuesAfterSelection()
+        self.renderAfterSelection()
 
         self.swapBuffers()
+    
+    def rerender(self):
+        '''
+        Wrapper for user's to call
+        '''
+
+        self._render()
     
     def onExit(self):
         '''
@@ -638,6 +646,7 @@ class Game:
                     time.sleep(timeLeft)
                 
             except:
+                self.game.errorInDrawThread = True
                 self.game.quit()
                 print(traceback.format_exc())
             
@@ -683,6 +692,7 @@ class Game:
                     time.sleep(timeLeft)
                         
             except:
+                self.game.errorInUpdateThread = True
                 self.game.quit()
                 print(traceback.format_exc())
 
@@ -744,7 +754,9 @@ class Game:
 
         # Create the game Threads
         self.canvasDrawThread: Game.CanvasDrawThread = Game.CanvasDrawThread(self)
+        self.errorInDrawThread: bool = False
         self.updateThread: Game.UpdateThread = Game.UpdateThread(self)
+        self.errorInUpdateThread: bool = False
 
         # Initialize colorama
         colorama.init()
@@ -877,17 +889,21 @@ class Game:
         self.isActive = False
         self.isDisplayActive = False
 
-        while self.canvasDrawThread.isAlive(): time.sleep(0.05)
-        while self.updateThread.isAlive(): time.sleep(0.05)
+        if not self.errorInDrawThread:
+            while self.canvasDrawThread.isAlive(): time.sleep(0.05)
+        if not self.errorInUpdateThread:
+            while self.updateThread.isAlive(): time.sleep(0.05)
 
         # Clsoe the getch thread
         self.eventGetter.getchThread.running = False
-        print("Successfully Quit Game")
-        print("\r", end = "")
 
-        # Simulate a keypress to end the getch thread
-        keyboard = pynput.keyboard.Controller()
-        keyboard.press("a")
+        while self.eventGetter.getchThread.isAlive():
+            # Simulate a keypress to end the getch thread
+            keyboard = pynput.keyboard.Controller()
+            keyboard.press(" ")
+            time.sleep(0.05)
+        
+        print("Successfully Quit Game\r\r")
 
     def gameLoop(self):
         '''

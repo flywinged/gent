@@ -30,22 +30,28 @@ class GetchThread(Thread):
             import msvcrt #pylint: disable=import-error
             def getchFunction():
                 return ord(msvcrt.getwch())
+            def closeFunction():
+                return
 
         # Mac and linux implementations
         else:
             import tty, termios, sys #pylint: disable=import-error
+            fd = sys.stdin.fileno()
+            old_settings = termios.tcgetattr(fd)
             def getchFunction():
-                fd = sys.stdin.fileno()
-                old_settings = termios.tcgetattr(fd)
                 try:
                     tty.setraw(sys.stdin.fileno())
                     ch = sys.stdin.read(1)
                 finally:
                     termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
                 return ord(ch)
+            
+            def closeFunction():
+                termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
         
         # The getch function (Platform specific)
         self.getch: FunctionType = getchFunction
+        self.closeFunction: FunctionType = closeFunction
 
     def run(self):
 
@@ -54,6 +60,8 @@ class GetchThread(Thread):
             # NOTE: I have no idea why these have to be separate, But I will keep them this way just to make sure everything works correctly
             getchReturn = self.getch()
             self.sequence.append(getchReturn)
+        
+        self.closeFunction()
 
 class EventGetter:
     '''

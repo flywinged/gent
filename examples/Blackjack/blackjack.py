@@ -13,7 +13,7 @@ def run():
     STATE.deal()
 
     # Create the game object
-    g = Game(STATE, (80, 32))
+    g = Game(STATE, (54, 19))
 
     # Add all the screens to the game
     initializeScreens(g)

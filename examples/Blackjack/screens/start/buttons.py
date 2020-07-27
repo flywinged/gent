@@ -2,7 +2,6 @@
 
 from gent import Box
 from gent import TextLine
-from gent import loadPNG
 from gent import Game
 from gent import Selection_Fill
 
@@ -15,7 +14,7 @@ class PlayButton(TextLine):
 
         TextLine.__init__(
             self,
-            Box(30, 14, 20, 1),
+            Box(20, 7, 12, 1),
             "Start",
             (255, 255, 255),
             (0, 0, 0),
@@ -39,7 +38,7 @@ class QuitButton(TextLine):
     def __init__(self, game: Game):
         TextLine.__init__(
             self,
-            Box(30, 15, 20, 1),
+            Box(20, 8, 12, 1),
             "Quit",
             (255, 255, 255),
             (0, 0, 0),
