@@ -22,18 +22,24 @@ class CardDisplay(GameObject):
 
         self.suitColor: Tuple[int] = (0, 0, 0)
 
-    def setCard(self, cardData: CardData):
+    def setCard(self, cardData: CardData, hide: bool = False):
         '''
         Reset all the text values for the text box and the suit indicator
         '''
-
-        self.name.text = " " + cardData.name + " of " + cardData.suit
-        self.name.rerender()
         
         self.suitColor = (255, 0, 0)
         if cardData.suit == "Spades": self.suitColor = (0, 0, 0)
         if cardData.suit == "Diamonds": self.suitColor = (30, 30, 210)
         if cardData.suit == "Clubs": self.suitColor = (30, 210, 30)
+        
+        if hide:
+            self.suitColor = (60, 15, 90)
+            self.name.text = "Hidden"
+
+        else:
+            self.name.text = " " + cardData.name + " of " + cardData.suit
+            
+        self.name.rerender()
 
     def render(self):
         
@@ -71,7 +77,12 @@ class Hand(GameObject):
         self.cardTotal.drawOn(self)
 
         for y in range(len(self.cardList)):
+
+            hide = False
+            if y == 0 and self.player.text == "Dealer" and STATE.turn == "player":
+                hide = True
+
             data = self.cardList[y]
-            self.cardObjects[y].setCard(data)
+            self.cardObjects[y].setCard(data, hide=hide)
             self.cardObjects[y].rerender()
             self.cardObjects[y].drawOn(self)

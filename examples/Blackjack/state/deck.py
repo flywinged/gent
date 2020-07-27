@@ -27,6 +27,8 @@ class Deck:
         Repopulate self.cards with an ordered deck
         '''
 
+        self.cards = []
+
         for value in range(1, 14):
             for suit in ["Clubs", "Spades", "Diamonds", "Hearts"]:
                 cardName = {

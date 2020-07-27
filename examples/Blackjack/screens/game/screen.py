@@ -32,9 +32,15 @@ class GameScreen(GameObject):
     
     def handleEvent(self, event: Event):
 
-        if event.keyName == "RIGHT":
+        # Hit
+        if event.keyName == "RETURN":
             STATE.hit("player")
         
+        # Stay
+        if event.keyName == "SPACE":
+            pass
+        
+        # Return to main menu
         if event.keyName == "TAB":
             self.game.goToScreen("Start")
     
